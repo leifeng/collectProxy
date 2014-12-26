@@ -1,7 +1,7 @@
 /**
  * Created by chuanlong on 2014/12/24.
  */
-var collectProxy = require('./collectProxy');
+var collectProxy = require('./../360proxy');
 
 var opt = {
     port: 80,

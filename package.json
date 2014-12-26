@@ -1,7 +1,16 @@
 {
-  "name": "collectProxy",
-  "version": "0.0.1",
+  "name": "360proxy",
+  "version": "0.0.4",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leifeng/collectProxy.git"
+  },
+  "Author name": "ZhangChl",
+  "Author email":"289528400@qq.com",
+  "description": "采集proxy360代理",
+  "main": "360proxy.js",
   "dependencies": {
     "jsdom": "^1.5.0"
-  }
+  },
+  "license" : "BSD"
 }

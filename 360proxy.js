@@ -58,7 +58,7 @@ var localTestSpeed = function (arr, cb, timeout) {
     test(arr[index].port, arr[index].host);
 
 };
-var getProxy = function (opt, cb) {
+exports.getProxy = function (opt, cb) {
     //默认配置
     var defaults = {
         port: null,             //不限端口
@@ -173,4 +173,3 @@ var getProxy = function (opt, cb) {
     });
     req.end();
 };
-exports.getProxy = getProxy;

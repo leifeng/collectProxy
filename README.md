@@ -1,7 +1,15 @@
-collectProxy
+采集www.proxy360.net 代理信息
 ============
 
-采集http://www.proxy360.net/ 代理信息
+
+[![NPM version](https://badge.fury.io/js/360proxy.png)](http://badge.fury.io/js/360proxy)
+
+[![NPM](https://nodei.co/npm/360proxy.png?downloads=true&downloadRank=true)](https://nodei.co/npm/360proxy/)
+##安装360proxy
+```bash
+$ npm install 360proxy -g
+```
+
 ##参数说明
 ```javascript
     var opt = {
@@ -12,15 +20,11 @@ collectProxy
         localFilter:true,    //是否本地网速过滤超时的代理
         localTimeout:1500       //本地超时时间
     };
-    localTestSpeed(arr, cb, timeout)
-    arr:采集的结果
-    cb:回调
-    timeout:本地设置超时时间
 ```
 
 ##使用
 ```javascript
-var collectProxy = require('./collectProxy');
+var collectProxy = require('360proxy');
 var opt = {
     port: 80,
     accessSpeed: 10,
