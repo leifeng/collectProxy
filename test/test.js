@@ -4,14 +4,17 @@
 var collectProxy = require('./../360proxy');
 
 var opt = {
-    port: 80,
+    port: null,
     accessSpeed: 10,
     responseSpeed: 10,
     httpType: null,
-    anonymous: 'high',
-    localFilter:true,    //是否本地网速过滤超时的代理,
-    localTimeout:1500       //本地超时时间
+    anonymous: null,
+    localFilter:false,
+    localTimeout:1500,
+    proxyType:'gn',
+    pages:2
 };
 collectProxy.getProxy(opt, function (arr) {
     console.log(arr);
+    console.log('完成');
 });

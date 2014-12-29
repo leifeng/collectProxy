@@ -13,12 +13,15 @@ $ npm install 360proxy -g
 ##参数说明
 ```javascript
     var opt = {
-        port: null,     //不限端口
-        accessSpeed: 80,//访问速度
-        responseSpeed: 80,//响应速度
-        httpType: null, //可以为 http 或 https
-        localFilter:true,    //是否本地网速过滤超时的代理
-        localTimeout:1500       //本地超时时间
+        port: null,         //不限端口
+        accessSpeed: 80,    //访问速度
+        responseSpeed: 80,  //响应速度
+        httpType: null,      //可以为 http 或 https
+        anonymous: null,     //代理匿名类型 high or low or null 不用改（会改变您的IP，远程服务器不知道您的真实IP，也不知道您正在使用代理访问）
+        localFilter:true,    //是否本地网速过滤超时的代理(开启可能会延时很长，不过过滤后更准确)
+        localTimeout:1500    //本地超时时间
+        proxyType:'gw',      //gn：国内  gw：国外
+        pages:1             //采集页数（默认采集1页）
     };
 ```
 
@@ -26,16 +29,16 @@ $ npm install 360proxy -g
 ```javascript
 var collectProxy = require('360proxy');
 var opt = {
-    port: 80,
+    port: null,
     accessSpeed: 10,
     responseSpeed: 10,
     httpType: null,
-    anonymous: 'high'，
-     localFilter:true
+    anonymous: null，
+    localFilter:false,
+    proxyType:'gw',
+    page:2
 }
 collectProxy.getProxy(opt, function (arr) {
     console.log(arr);
 })
 ```
-##注
-没有实现分页采集，只采集第一页最新的代理信息

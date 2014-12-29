@@ -15,7 +15,7 @@ var localTestSpeed = function (arr, cb, timeout) {
     var time = 2000;
     if (timeout) time = timeout;
     var filterArr = [];
-    var len = arr.length-1;
+    var len = arr.length - 1;
     var index = 0;
     var test = function (port, host) {
         var client = new net.Socket();
@@ -58,24 +58,13 @@ var localTestSpeed = function (arr, cb, timeout) {
     test(arr[index].port, arr[index].host);
 
 };
-exports.getProxy = function (opt, cb) {
-    //默认配置
-    var defaults = {
-        port: null,             //不限端口
-        accessSpeed: 80,
-        responseSpeed: 80,
-        httpType: null,      //可以为 http 或 https
-        anonymous: 'high',   //代理匿名类型 不用改（会改变您的IP，远程服务器不知道您的真实IP，也不知道您正在使用代理访问）
-        localFilter:true,    //是否本地网速过滤超时的代理
-        localTimeout:2000       //本地超时时间
-    };
-    defaults = extend(defaults, opt);
-    var req = http.request('http://www.proxy360.net/guonei/', function (res) {
+
+var cj = function (defaults,arr, url, page, index, cb) {
+   var req= http.request('http://www.proxy360.net/' + url + '/' + index, function (res) {
         var html = '';
         res.on('data', function (chunk) {
             html += chunk;
         }).on('end', function () {
-            var result = [];
             jsdom.env(
                 html, ['jquery-2.1.1.min.js'], function (err, window) {
                     var $ = window.$;
@@ -88,9 +77,9 @@ exports.getProxy = function (opt, cb) {
                         //响应速度
                         var responseSpeed = $(this).find('td:eq(5) .indicator').css('width');
                         //http类型
-                        var httpType = $(this).find('td:eq(6)').text();
+                        var httpType = $(this).find('td:eq(6)').text().toLowerCase();
                         //匿名类型
-                        var anonymous = $(this).find('td:eq(7)').text();
+                        var anonymous = $(this).find('td:eq(7)').text().toLowerCase();
 
                         //处理ip地址
                         var hostDiv = $(this).find('td:eq(1)>span');
@@ -122,29 +111,34 @@ exports.getProxy = function (opt, cb) {
                         });
                         //过滤后的ip地址
                         var host = $(hostDiv).text();
-                     //   console.log(host, port, httpType, anonymous, accessSpeed, responseSpeed);
                         //匹配条件
                         if (defaults.port) {
                             if (port != defaults.port) {
-                                //console.log('port');
+                                console.log('port',host,port);
                                 return true;
                             }
                         }
                         if (defaults.accessSpeed) {
                             if (parseInt(accessSpeed, 10) <= defaults.accessSpeed) {
-                                //console.log('accessSpeed');
+                                console.log('accessSpeed',accessSpeed,host,port);
                                 return true;
                             }
                         }
                         if (defaults.responseSpeed) {
                             if (parseInt(responseSpeed, 10) <= defaults.responseSpeed) {
-                                //console.log('responseSpeed');
+                                console.log('responseSpeed',responseSpeed,host,port);
                                 return true;
                             }
                         }
                         if (defaults.httpType) {
                             if (httpType != defaults.httpType) {
-                                //console.log('httpType');
+                                console.log('httpType',httpType,host,port);
+                                return true;
+                            }
+                        }
+                        if(defaults.anonymous){
+                            if(anonymous.indexOf(defaults.anonymous)==-1){
+                                console.log('anonymous',anonymous,host,port);
                                 return true;
                             }
                         }
@@ -156,20 +150,43 @@ exports.getProxy = function (opt, cb) {
                             httpType: httpType,
                             anonymous: anonymous
                         };
-                        result.push(obj);
+                        arr.push(obj);
                     });
                     window.close();
-                    if(defaults.localFilter){
-                        localTestSpeed(result,function(arr){
-                            cb(arr);
-                        },defaults.localTimeout);
-                    }else{
-                        cb(result);
+                    if (page > index) {
+                        cj(defaults,arr, url, page, ++index,cb)
+                    } else {
+                        cb(arr);
                     }
-
                 }
             )
         });
     });
     req.end();
+};
+exports.getProxy = function (opt, cb) {
+    //默认配置
+    var defaults = {
+        port: null,             //不限端口
+        accessSpeed: 80,
+        responseSpeed: 80,
+        httpType: null,      //可以为 http 或 https
+        anonymous: null,   //代理匿名类型 high or low or null 不用改（会改变您的IP，远程服务器不知道您的真实IP，也不知道您正在使用代理访问）
+        localFilter: false, //是否本地网速过滤超时的代理(开启可能会延时很长，不过过滤后更准确)
+        localTimeout: 2000, //本地超时时间
+        proxyType: 'gn',   //国内代理gn，国外代理gw
+        pages: 1       //采集的页数
+    };
+    defaults = extend(defaults, opt);
+    var url = (defaults.proxyType === 'gn' ? 'guonei' : 'guowai');
+    var arr=[];
+    cj(defaults,arr,url,defaults.pages,1,function(result){
+        if (defaults.localFilter) {
+            localTestSpeed(result, function (arr) {
+                cb(arr);
+            }, defaults.localTimeout);
+        } else {
+            cb(result);
+        }
+    });
 };
